@@ -1,0 +1,21 @@
+\name{run_clinical_tests}
+\alias{run_clinical_tests}
+\title{Run Clinical Statistical Reference Tests}
+\usage{
+run_clinical_tests(tolerance = 1e-06)
+}
+\arguments{
+\item{tolerance}{Relative tolerance for numeric comparisons (default 1e-6).}
+}
+\value{
+A data.frame with Test, Category, Expected, Actual, and Passed.
+}
+\description{
+Executes a set of accuracy checks for common clinical trial statistical
+analyses against known reference values. These cover typical scenarios
+validated in SAS-based submissions to FDA (descriptive statistics,
+group comparisons, and basic survival summaries).
+}
+\examples{
+run_clinical_tests()
+}

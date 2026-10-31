@@ -1,0 +1,25 @@
+\name{verify_versions}
+\alias{verify_versions}
+\title{Verify Package Versions Against an Approved List}
+\usage{
+verify_versions(approved, current = NULL)
+}
+\arguments{
+\item{approved}{Named character vector (names = package names, values = versions)
+or a data.frame with columns Package and Version.}
+
+\item{current}{Optional data.frame of current packages (from
+capture_environment()$packages). If NULL, the current environment is used.}
+}
+\value{
+A data.frame with columns Package, Approved, Current, Status
+(Match, Mismatch, or Missing).
+}
+\description{
+Compares currently installed package versions to an approved reference
+list. Useful for Installation Qualification.
+}
+\examples{
+approved <- c(stats = as.character(packageVersion("stats")))
+verify_versions(approved)
+}

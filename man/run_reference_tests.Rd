@@ -1,0 +1,19 @@
+\name{run_reference_tests}
+\alias{run_reference_tests}
+\title{Run Built-in Statistical Reference Tests}
+\usage{
+run_reference_tests(tolerance = 1e-08)
+}
+\arguments{
+\item{tolerance}{Relative tolerance for comparisons (default 1e-8).}
+}
+\value{
+A data.frame with Test, Expected, Actual, and Passed columns.
+}
+\description{
+Executes a set of standard accuracy checks against known reference values
+for common statistical functions. Useful as a quick OQ suite.
+}
+\examples{
+run_reference_tests()
+}

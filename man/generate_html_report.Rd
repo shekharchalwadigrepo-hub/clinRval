@@ -1,0 +1,27 @@
+\name{generate_html_report}
+\alias{generate_html_report}
+\title{Generate HTML Validation Report}
+\usage{
+generate_html_report(env, verification = NULL, reference_tests = NULL,
+                     risk = NULL, dependencies = NULL,
+                     file = "validation_report.html")
+}
+\arguments{
+\item{env}{Result from capture_environment().}
+
+\item{verification}{Optional result from verify_versions().}
+
+\item{reference_tests}{Optional result from run_reference_tests().}
+
+\item{risk}{Optional result from tag_risk().}
+
+\item{dependencies}{Optional result from resolve_dependencies().}
+
+\item{file}{Output HTML file path.}
+}
+\value{
+Invisible path to the written file.
+}
+\description{
+Creates a simple self-contained HTML report from validation results.
+}

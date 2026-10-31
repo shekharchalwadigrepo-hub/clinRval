@@ -1,0 +1,26 @@
+\name{compare_results}
+\alias{compare_results}
+\title{Compare Two Numeric Results (Dual Programming Style)}
+\usage{
+compare_results(result1, result2, tolerance = 1e-06, relative = FALSE)
+}
+\arguments{
+\item{result1}{Numeric vector or scalar from primary analysis.}
+
+\item{result2}{Numeric vector or scalar from independent analysis.}
+
+\item{tolerance}{Absolute or relative tolerance.}
+
+\item{relative}{Logical; use relative tolerance? Default FALSE (absolute).}
+}
+\value{
+A data.frame with comparison details and overall pass/fail.
+}
+\description{
+Compares results from two independent analyses (e.g., primary R program
+vs. independent verification or SAS reference). Common validation
+practice for FDA submissions.
+}
+\examples{
+compare_results(c(1.23, 4.56), c(1.23, 4.57), tolerance = 0.01)
+}

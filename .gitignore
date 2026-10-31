@@ -1,0 +1,19 @@
+# R package files
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# Build artifacts
+*.tar.gz
+*.Rcheck/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Validation outputs (optional - remove if you want to track them)
+validation_log.csv
+validation_*.csv
+*_validation_*.csv
+validation_report.html

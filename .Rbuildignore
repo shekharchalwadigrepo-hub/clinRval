@@ -1,0 +1,5 @@
+# Example .Rbuildignore
+^.*\.Rproj$
+^\.Rproj\.user$
+^README\.md$
+^LICENSE\.md$

@@ -1,0 +1,23 @@
+\name{capture_environment}
+\alias{capture_environment}
+\title{Capture Current R Environment for Validation Records}
+\usage{
+capture_environment(packages = NULL)
+}
+\arguments{
+\item{packages}{Character vector of package names to check specifically.
+If NULL, reports all attached packages.}
+}
+\value{
+A list with elements: r_version, platform, packages (data.frame),
+timestamp, and session_info.
+}
+\description{
+Returns a structured summary of the R version, platform, and installed
+packages. Suitable for inclusion in Installation Qualification (IQ)
+documentation for clinical trial analyses.
+}
+\examples{
+env <- capture_environment(packages = c("stats", "utils"))
+str(env)
+}

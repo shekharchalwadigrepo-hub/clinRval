@@ -1,0 +1,22 @@
+\name{generate_summary}
+\alias{generate_summary}
+\title{Generate a Validation Summary Text}
+\usage{
+generate_summary(env, checks = NULL, verification = NULL, file = NULL)
+}
+\arguments{
+\item{env}{Result from capture_environment().}
+
+\item{checks}{Optional named list of check results.}
+
+\item{verification}{Optional result from verify_versions().}
+
+\item{file}{Optional path to write the summary to.}
+}
+\value{
+Character string with the summary (invisibly if file is specified).
+}
+\description{
+Creates a plain-text summary suitable for inclusion in a Validation
+Summary Report. Optionally writes the summary to a file.
+}

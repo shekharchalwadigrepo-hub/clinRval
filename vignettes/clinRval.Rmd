@@ -1,0 +1,121 @@
+---
+title: "Using clinRval for Clinical Trial R Validation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using clinRval for Clinical Trial R Validation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(clinRval)
+```
+
+## Introduction
+
+`clinRval` provides lightweight tools to support risk-based validation of R environments and code used in clinical trials. It helps generate documentation suitable for Installation Qualification (IQ) and Operational Qualification (OQ) activities.
+
+## Capture the Environment
+
+```{r}
+env <- capture_environment(packages = c("stats", "utils"))
+print(env$r_version)
+head(env$packages)
+```
+
+## Verify Package Versions
+
+```{r}
+approved <- c(stats = as.character(packageVersion("stats")))
+ver <- verify_versions(approved)
+ver
+```
+
+## Accuracy and Reproducibility Checks
+
+```{r}
+check_accuracy(mean, list(1:10), expected = 5.5)
+check_reproducibility(quote(sd(1:10)))
+```
+
+## Generate Summary Text
+
+```{r}
+summary_text <- generate_summary(env, verification = ver)
+cat(summary_text)
+```
+
+You can also write the summary directly to a file:
+
+```{r, eval = FALSE}
+generate_summary(env, verification = ver, file = "validation_summary.txt")
+```
+
+## Reference Tests and Risk Tagging
+
+```{r}
+ref <- run_reference_tests()
+ref
+
+risk <- tag_risk(c("survival", "dplyr", "ggplot2", "stats"))
+risk
+```
+
+## Clinical Statistical Tests (SAS-style scenarios)
+
+```{r}
+clinical <- run_clinical_tests()
+clinical
+```
+
+## Validation Log and CSV Export
+
+```{r, eval = FALSE}
+# Log a validation activity
+log_validation("Version verification", "PASS", "All packages matched approved list")
+
+# Export results for the TMF
+export_results(
+  inventory = env$packages,
+  verification = ver,
+  prefix = "study_validation_"
+)
+```
+
+```{r}
+primary <- c(10.9, 2.34, 0.045)
+independent <- c(10.9, 2.35, 0.045)
+comp <- compare_results(primary, independent, tolerance = 0.02)
+comp
+```
+
+```{r}
+conflicts <- detect_version_conflicts(c("survival", "rmarkdown"))
+if (nrow(conflicts) == 0) {
+  message("No version conflicts detected.")
+} else {
+  print(conflicts)
+}
+```
+
+```{r}
+deps <- resolve_dependencies(c("survival", "rmarkdown"))
+head(deps)
+```
+
+```{r, eval = FALSE}
+generate_html_report(
+  env = env,
+  verification = ver,
+  reference_tests = ref,
+  risk = risk,
+  file = "validation_report.html"
+)
+```

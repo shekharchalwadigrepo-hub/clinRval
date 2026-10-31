@@ -1,0 +1,22 @@
+\name{check_reproducibility}
+\alias{check_reproducibility}
+\title{Check Reproducibility of an Expression}
+\usage{
+check_reproducibility(expr, times = 2)
+}
+\arguments{
+\item{expr}{An expression to evaluate (use quote() or substitute).}
+
+\item{times}{Number of times to evaluate (default 2).}
+}
+\value{
+Logical indicating whether all evaluations produced identical results.
+The individual results are attached as an attribute.
+}
+\description{
+Evaluates an expression twice and checks whether the results are identical.
+Useful for confirming that analysis code is deterministic.
+}
+\examples{
+check_reproducibility(quote(mean(1:10)))
+}
