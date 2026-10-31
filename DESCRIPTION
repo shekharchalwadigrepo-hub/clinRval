@@ -1,6 +1,6 @@
 Package: clinRval
 Title: Tools for Risk-Based Validation of R in Clinical Trials
-Version: 0.7.0
+Version: 0.1.0
 Authors@R: person("Shekhar Chalwadi", role = c("aut", "cre"), email = "skrchalwadicg@gmail.com")
 Description: Provides functions and structured workflows to support risk-based validation of R environments, packages, and analysis programs used in clinical trials. Helps generate evidence suitable for regulatory submissions (FDA 21 CFR Part 11 context, ICH E6). Includes environment capture, basic accuracy checks, and report helpers.
 License: MIT + file LICENSE
