@@ -2,7 +2,9 @@ test_that("capture_environment returns expected structure", {
   env <- capture_environment(packages = "stats")
   expect_true(is.list(env))
   expect_true("r_version" %in% names(env))
-  expect_true(grepl("R version", env$r_version))
+  # R.version.string is "R version ..." on release, "R Under development ..." on devel
+  expect_true(is.character(env$r_version) && nzchar(env$r_version))
+  expect_true(grepl("^R ", env$r_version))
   expect_s3_class(env$packages, "data.frame")
 })
 
