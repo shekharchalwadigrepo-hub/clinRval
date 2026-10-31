@@ -6,7 +6,7 @@
 #' @param action Character string describing the action (e.g., "Version verification").
 #' @param status Character; typically "PASS" or "FAIL".
 #' @param details Optional character string with extra information.
-#' @param user Optional user name. Defaults to Sys.info()["user"].
+#' @param user Optional user name. Defaults to the current system user.
 #' @param logfile Path to the log file. Defaults to "validation_log.csv".
 #' @return Invisible data.frame of the log entry that was written.
 #' @export

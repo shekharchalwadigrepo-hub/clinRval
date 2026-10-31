@@ -257,6 +257,7 @@ tag_risk <- function(packages,
 #' @param verification Optional result from verify_versions().
 #' @param reference_tests Optional result from run_reference_tests().
 #' @param risk Optional result from tag_risk().
+#' @param dependencies Optional result from resolve_dependencies().
 #' @param file Output HTML file path.
 #' @return Invisible path to the written file.
 #' @export

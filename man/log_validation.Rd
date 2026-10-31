@@ -19,7 +19,7 @@ log_validation(
 
 \item{details}{Optional character string with extra information.}
 
-\item{user}{Optional user name. Defaults to Sys.info()\link{"user"}.}
+\item{user}{Optional user name. Defaults to the current system user.}
 
 \item{logfile}{Path to the log file. Defaults to "validation_log.csv".}
 }

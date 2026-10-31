@@ -22,6 +22,8 @@ generate_html_report(
 
 \item{risk}{Optional result from tag_risk().}
 
+\item{dependencies}{Optional result from resolve_dependencies().}
+
 \item{file}{Output HTML file path.}
 }
 \value{
