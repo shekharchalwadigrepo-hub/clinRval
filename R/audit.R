@@ -11,7 +11,11 @@
 #' @return Invisible data.frame of the log entry that was written.
 #' @export
 #' @examples
-#' log_validation("Environment capture", "PASS", "R 4.4.1 confirmed")
+#' # Write to a temporary file so the example is clean for R CMD check
+#' tmp_log <- tempfile(fileext = ".csv")
+#' log_validation("Environment capture", "PASS", "R 4.4.1 confirmed",
+#'                logfile = tmp_log)
+#' unlink(tmp_log)
 log_validation <- function(action, status, details = "", user = NULL,
                            logfile = "validation_log.csv") {
   if (is.null(user)) {
@@ -51,8 +55,11 @@ log_validation <- function(action, status, details = "", user = NULL,
 #' @return Invisible character vector of file paths written.
 #' @export
 #' @examples
+#' # Write to a temporary directory so the example is clean for R CMD check
 #' env <- capture_environment(packages = "stats")
-#' export_results(inventory = env$packages, prefix = "val_")
+#' tmp_dir <- tempdir()
+#' export_results(inventory = env$packages, prefix = "val_", dir = tmp_dir)
+#' unlink(file.path(tmp_dir, "val_inventory.csv"))
 export_results <- function(..., prefix = "validation_", dir = ".") {
   objects <- list(...)
   if (length(objects) == 0) {

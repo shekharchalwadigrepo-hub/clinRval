@@ -344,20 +344,39 @@ generate_html_report <- function(env, verification = NULL, reference_tests = NUL
 #'   Default is c("Depends", "Imports"). Use c("Depends", "Imports", "Suggests")
 #'   for a broader set.
 #' @param recursive Logical; resolve dependencies of dependencies? Default TRUE.
+#' @param db Optional package database (matrix from \code{installed.packages()}
+#'   or \code{available.packages()}). Defaults to installed packages so the
+#'   function works offline and during \code{R CMD check} without a CRAN mirror.
+#'   Pass \code{available.packages()} (after setting a CRAN mirror) for the
+#'   full public dependency graph.
 #' @return A data.frame with Package, Version, and Source (Direct or Dependency).
 #' @export
 #' @examples
-#' resolve_dependencies(c("survival", "rmarkdown"))
+#' # Works offline using installed packages only
+#' resolve_dependencies("stats")
+#' \dontrun{
+#' # Full resolution from CRAN (requires a mirror and network)
+#' options(repos = c(CRAN = "https://cloud.r-project.org"))
+#' resolve_dependencies(c("survival", "rmarkdown"), db = available.packages())
+#' }
 resolve_dependencies <- function(packages,
                                  which = c("Depends", "Imports"),
-                                 recursive = TRUE) {
+                                 recursive = TRUE,
+                                 db = NULL) {
   if (!is.character(packages) || length(packages) == 0) {
     stop("packages must be a non-empty character vector")
+  }
+
+  # Default to installed packages to avoid requiring a CRAN mirror
+  # (important for examples, offline use, and R CMD check).
+  if (is.null(db)) {
+    db <- utils::installed.packages()
   }
 
   # Use tools::package_dependencies for resolution
   deps <- tools::package_dependencies(
     packages,
+    db = db,
     which = which,
     recursive = recursive,
     reverse = FALSE
