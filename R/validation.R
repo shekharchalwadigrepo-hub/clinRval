@@ -290,7 +290,7 @@ generate_html_report <- function(env, verification = NULL, reference_tests = NUL
       v <- verification[i, ]
       status_class <- if (v$Status == "Match") "pass" else "fail"
       html <- c(html, paste0("<tr><td>", v$Package, "</td><td>", v$Approved, "</td><td>",
-                             ifelse(is.na(v$Current), "—", v$Current), "</td><td class='", status_class, "'>", v$Status, "</td></tr>"))
+                             ifelse(is.na(v$Current), "-", v$Current), "</td><td class='", status_class, "'>", v$Status, "</td></tr>"))
     }
     html <- c(html, "</table>")
   }
@@ -394,7 +394,12 @@ resolve_dependencies <- function(packages,
 #'   Empty data.frame if no conflicts found.
 #' @export
 #' @examples
+#' \dontrun{
+#' # Requires network access to CRAN
 #' detect_version_conflicts(c("survival", "rmarkdown"))
+#' }
+#' # Safe example using base packages only
+#' detect_version_conflicts("stats")
 detect_version_conflicts <- function(packages, which = c("Depends", "Imports")) {
   if (!is.character(packages) || length(packages) == 0) {
     stop("packages must be a non-empty character vector")

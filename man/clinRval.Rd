@@ -20,7 +20,7 @@ Helps generate evidence suitable for regulatory submissions.
 \item \code{\link{check_reproducibility}}: Confirm an expression is deterministic
 \item \code{\link{run_reference_tests}}: Built-in statistical accuracy checks
 \item \code{\link{tag_risk}}: Assign High/Medium/Low risk to packages
-\item \code{\link{run_clinical_tests}}: Clinical statistical reference tests (SAS-style scenarios)
+\item \code{\link{run_clinical_tests}}: Clinical statistical reference tests
 \item \code{\link{log_validation}}: Append entries to a validation audit log
 \item \code{\link{export_results}}: Export validation results to CSV files
 }
@@ -38,3 +38,4 @@ Useful links:
 \strong{Maintainer}: Shekhar Chalwadi \email{skrchalwadicg@gmail.com}
 
 }
+\keyword{internal}
