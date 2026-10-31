@@ -16,6 +16,8 @@
 #' - \code{\link{log_validation}}: Append entries to a validation audit log
 #' - \code{\link{export_results}}: Export validation results to CSV files
 #'
+#' @importFrom stats median sd t.test var
+#' @importFrom utils capture.output installed.packages packageVersion sessionInfo
 #' @name clinRval
 #' @keywords internal
 "_PACKAGE"

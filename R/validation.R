@@ -393,26 +393,26 @@ resolve_dependencies <- function(packages,
 #'   Package, RequiredBy, Requirement, Installed, Conflict.
 #'   Empty data.frame if no conflicts found.
 #' @export
+#' @importFrom stats median sd t.test var
+#' @importFrom utils capture.output installed.packages packageVersion sessionInfo write.csv read.csv packageDescription
 #' @examples
 #' \dontrun{
-#' # Requires network access to CRAN
-#' detect_version_conflicts(c("survival", "rmarkdown"))
+#' # This example requires network access
+#' detect_version_conflicts(c("survival"))
 #' }
-#' # Safe example using base packages only
-#' detect_version_conflicts("stats")
+NULL
 detect_version_conflicts <- function(packages, which = c("Depends", "Imports")) {
   if (!is.character(packages) || length(packages) == 0) {
     stop("packages must be a non-empty character vector")
   }
 
-  # Get available packages metadata
-  available <- utils::available.packages()
+  # Prefer installed package descriptions only (avoids CRAN mirror requirement)
   installed <- utils::installed.packages()
 
   conflicts <- list()
 
   for (pkg in packages) {
-    if (!pkg %in% rownames(available) && !pkg %in% rownames(installed)) next
+    if (!pkg %in% rownames(installed)) next
 
     # Prefer installed package description if available
     desc <- if (pkg %in% rownames(installed)) {
