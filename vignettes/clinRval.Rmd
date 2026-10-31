@@ -96,18 +96,10 @@ comp <- compare_results(primary, independent, tolerance = 0.02)
 comp
 ```
 
-```{r}
+```{r, eval = FALSE}
+# These require network or extra packages — shown for illustration only
 conflicts <- detect_version_conflicts(c("survival", "rmarkdown"))
-if (nrow(conflicts) == 0) {
-  message("No version conflicts detected.")
-} else {
-  print(conflicts)
-}
-```
-
-```{r}
 deps <- resolve_dependencies(c("survival", "rmarkdown"))
-head(deps)
 ```
 
 ```{r, eval = FALSE}
