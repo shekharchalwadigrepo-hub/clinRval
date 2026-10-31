@@ -17,7 +17,7 @@
 #' - \code{\link{export_results}}: Export validation results to CSV files
 #'
 #' @importFrom stats median sd t.test var
-#' @importFrom utils capture.output installed.packages packageVersion sessionInfo
+#' @importFrom utils capture.output installed.packages packageVersion sessionInfo write.csv read.csv packageDescription
 #' @name clinRval
 #' @keywords internal
 "_PACKAGE"

@@ -393,14 +393,11 @@ resolve_dependencies <- function(packages,
 #'   Package, RequiredBy, Requirement, Installed, Conflict.
 #'   Empty data.frame if no conflicts found.
 #' @export
-#' @importFrom stats median sd t.test var
-#' @importFrom utils capture.output installed.packages packageVersion sessionInfo write.csv read.csv packageDescription
 #' @examples
 #' \dontrun{
 #' # This example requires network access
 #' detect_version_conflicts(c("survival"))
 #' }
-NULL
 detect_version_conflicts <- function(packages, which = c("Depends", "Imports")) {
   if (!is.character(packages) || length(packages) == 0) {
     stop("packages must be a non-empty character vector")
