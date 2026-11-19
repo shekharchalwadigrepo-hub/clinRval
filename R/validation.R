@@ -92,10 +92,6 @@ check_accuracy <- function(fun, args, expected, tolerance = 1e-8) {
 #' approved <- c(stats = as.character(packageVersion("stats")))
 #' verify_versions(approved)
 verify_versions <- function(approved, current = NULL) {
-  if (is.null(current)) {
-    current <- capture_environment()$packages
-  }
-
   if (is.vector(approved) && !is.null(names(approved))) {
     approved_df <- data.frame(
       Package = names(approved),
@@ -110,6 +106,17 @@ verify_versions <- function(approved, current = NULL) {
     names(approved_df)[names(approved_df) == "Version"] <- "Approved"
   } else {
     stop("approved must be a named vector or data.frame with Package and Version")
+  }
+
+  # Look up current versions individually so we do not depend on a full
+  # library scan or on packages being attached/loaded.
+  if (is.null(current)) {
+    current_rows <- lapply(approved_df$Package, function(pkg) {
+      desc <- tryCatch(utils::packageDescription(pkg), error = function(e) NULL)
+      ver <- if (is.null(desc) || is.null(desc$Version)) NA_character_ else desc$Version
+      data.frame(Package = pkg, Version = ver, stringsAsFactors = FALSE)
+    })
+    current <- do.call(rbind, current_rows)
   }
 
   merged <- merge(

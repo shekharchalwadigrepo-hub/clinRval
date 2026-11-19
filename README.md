@@ -1,6 +1,6 @@
 # clinRval
 
-Tools for risk-based validation of R environments and code used in clinical trials.
+Risk-based validation of R environments and code used in clinical trials.
 
 **Author:** Shekhar Chalwadi  
 **GitHub:** [shekharchalwadigrepo-hub/clinRval](https://github.com/shekharchalwadigrepo-hub/clinRval)  
