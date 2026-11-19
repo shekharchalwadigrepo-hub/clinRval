@@ -7,17 +7,19 @@
 #' @param status Character; typically "PASS" or "FAIL".
 #' @param details Optional character string with extra information.
 #' @param user Optional user name. Defaults to the current system user.
-#' @param logfile Path to the log file. Defaults to "validation_log.csv".
+#' @param logfile Path to the log file. Must be supplied by the caller;
+#'   no default is provided so the function never writes into the user's
+#'   home directory or working directory by default.
 #' @return Invisible data.frame of the log entry that was written.
 #' @export
 #' @examples
-#' # Write to a temporary file so the example is clean for R CMD check
+#' # Write to a temporary file (never the user's home or working directory)
 #' tmp_log <- tempfile(fileext = ".csv")
 #' log_validation("Environment capture", "PASS", "R 4.4.1 confirmed",
 #'                logfile = tmp_log)
 #' unlink(tmp_log)
 log_validation <- function(action, status, details = "", user = NULL,
-                           logfile = "validation_log.csv") {
+                           logfile) {
   if (is.null(user)) {
     user <- Sys.info()[["user"]]
     if (is.null(user) || user == "") user <- "unknown"
@@ -51,16 +53,18 @@ log_validation <- function(action, status, details = "", user = NULL,
 #'
 #' @param ... Named objects to export (data.frames or lists that can be coerced).
 #' @param prefix Character prefix for output filenames. Default "validation_".
-#' @param dir Directory to write files into. Default current directory.
+#' @param dir Directory to write files into. Must be supplied by the caller;
+#'   no default is provided so the function never writes into the user's
+#'   home directory or working directory by default.
 #' @return Invisible character vector of file paths written.
 #' @export
 #' @examples
-#' # Write to a temporary directory so the example is clean for R CMD check
+#' # Write to a temporary directory (never the user's home or working directory)
 #' env <- capture_environment(packages = "stats")
 #' tmp_dir <- tempdir()
 #' export_results(inventory = env$packages, prefix = "val_", dir = tmp_dir)
 #' unlink(file.path(tmp_dir, "val_inventory.csv"))
-export_results <- function(..., prefix = "validation_", dir = ".") {
+export_results <- function(..., prefix = "validation_", dir) {
   objects <- list(...)
   if (length(objects) == 0) {
     stop("No objects provided to export")

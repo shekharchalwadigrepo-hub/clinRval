@@ -14,7 +14,7 @@ Tools for risk-based validation of R environments and code used in clinical tria
 
 # Or from source:
 # R CMD build clinRval
-# R CMD INSTALL clinRval_0.1.1.tar.gz
+# R CMD INSTALL clinRval_0.1.2.tar.gz
 ```
 
 ## Quick Examples

@@ -55,7 +55,7 @@ cat(summary_text)
 You can also write the summary directly to a file:
 
 ```{r, eval = FALSE}
-generate_summary(env, verification = ver, file = "validation_summary.txt")
+generate_summary(env, verification = ver, file = file.path(tempdir(), "validation_summary.txt"))
 ```
 
 ## Reference Tests and Risk Tagging
@@ -78,14 +78,17 @@ clinical
 ## Validation Log and CSV Export
 
 ```{r, eval = FALSE}
-# Log a validation activity
-log_validation("Version verification", "PASS", "All packages matched approved list")
+# Always write to a temporary directory (never the user's home or working directory)
+tmp <- tempdir()
+log_validation("Version verification", "PASS", "All packages matched approved list",
+               logfile = file.path(tmp, "validation_log.csv"))
 
 # Export results for the TMF
 export_results(
   inventory = env$packages,
   verification = ver,
-  prefix = "study_validation_"
+  prefix = "study_validation_",
+  dir = tmp
 )
 ```
 
@@ -108,6 +111,6 @@ generate_html_report(
   verification = ver,
   reference_tests = ref,
   risk = risk,
-  file = "validation_report.html"
+  file = file.path(tempdir(), "validation_report.html")
 )
 ```

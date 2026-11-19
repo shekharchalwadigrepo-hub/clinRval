@@ -1,4 +1,4 @@
-#' clinRval: Tools for Risk-Based Validation of R in Clinical Trials
+#' clinRval: Risk-Based Validation of R in Clinical Trials
 #'
 #' Provides functions and structured workflows to support risk-based validation
 #' of R environments, packages, and analysis programs used in clinical trials.
@@ -17,7 +17,7 @@
 #' - \code{\link{export_results}}: Export validation results to CSV files
 #'
 #' @importFrom stats median sd t.test var
-#' @importFrom utils capture.output installed.packages packageVersion sessionInfo write.csv read.csv packageDescription
+#' @importFrom utils capture.output packageVersion sessionInfo write.csv read.csv packageDescription
 #' @name clinRval
 #' @keywords internal
 "_PACKAGE"

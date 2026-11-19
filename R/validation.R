@@ -14,12 +14,33 @@
 #' str(env)
 capture_environment <- function(packages = NULL) {
   info <- utils::sessionInfo()
-  pkg_df <- as.data.frame(utils::installed.packages()[, c("Package", "Version", "Built")])
-  rownames(pkg_df) <- NULL
 
-  if (!is.null(packages)) {
-    pkg_df <- pkg_df[pkg_df$Package %in% packages, , drop = FALSE]
+  # Avoid installed.packages() (slow; discouraged by CRAN).
+  # When packages is NULL, report attached and loaded packages only.
+  if (is.null(packages)) {
+    attached <- names(info$otherPkgs)
+    loaded <- names(info$loadedOnly)
+    packages <- unique(c(attached, loaded))
+    packages <- packages[!is.na(packages) & nzchar(packages)]
   }
+
+  rows <- lapply(packages, function(pkg) {
+    desc <- tryCatch(utils::packageDescription(pkg), error = function(e) NULL)
+    if (is.null(desc) || (length(desc) == 1 && is.na(desc))) {
+      data.frame(Package = pkg, Version = "Not found", Built = NA_character_,
+                 stringsAsFactors = FALSE)
+    } else {
+      data.frame(
+        Package = pkg,
+        Version = if (!is.null(desc$Version)) desc$Version else "Unknown",
+        Built = if (!is.null(desc$Built)) desc$Built else NA_character_,
+        stringsAsFactors = FALSE
+      )
+    }
+  })
+  pkg_df <- if (length(rows)) do.call(rbind, rows) else
+    data.frame(Package = character(0), Version = character(0), Built = character(0),
+               stringsAsFactors = FALSE)
 
   list(
     r_version = R.version.string,
@@ -258,12 +279,14 @@ tag_risk <- function(packages,
 #' @param reference_tests Optional result from run_reference_tests().
 #' @param risk Optional result from tag_risk().
 #' @param dependencies Optional result from resolve_dependencies().
-#' @param file Output HTML file path.
+#' @param file Output HTML file path. Must be supplied by the caller;
+#'   no default is provided so the function never writes into the user's
+#'   home directory or working directory by default.
 #' @return Invisible path to the written file.
 #' @export
 generate_html_report <- function(env, verification = NULL, reference_tests = NULL,
                                  risk = NULL, dependencies = NULL,
-                                 file = "validation_report.html") {
+                                 file) {
   html <- c(
     "<!DOCTYPE html>",
     "<html><head><meta charset='UTF-8'>",
@@ -345,19 +368,23 @@ generate_html_report <- function(env, verification = NULL, reference_tests = NUL
 #'   Default is c("Depends", "Imports"). Use c("Depends", "Imports", "Suggests")
 #'   for a broader set.
 #' @param recursive Logical; resolve dependencies of dependencies? Default TRUE.
-#' @param db Optional package database (matrix from \code{installed.packages()}
-#'   or \code{available.packages()}). Defaults to installed packages so the
-#'   function works offline and during \code{R CMD check} without a CRAN mirror.
-#'   Pass \code{available.packages()} (after setting a CRAN mirror) for the
-#'   full public dependency graph.
+#' @param db Optional package database (matrix from \code{available.packages()}).
+#'   When NULL (the default), only the Depends/Imports fields of the
+#'   supplied packages themselves are examined via \code{packageDescription()}.
+#'   This avoids a full library scan. Pass \code{available.packages()}
+#'   (after setting a CRAN mirror) for the complete public dependency graph.
 #' @return A data.frame with Package, Version, and Source (Direct or Dependency).
 #' @export
 #' @examples
-#' # Works offline using installed packages only
+#' # Works offline; only examines installed packages that are already loaded
+#' # or supplied via the db argument
 #' resolve_dependencies("stats")
 #' \dontrun{
-#' # Full resolution from CRAN (requires a mirror and network)
+#' # Full resolution from CRAN (requires a mirror and network).
+#' # Always restore the previous repos setting.
+#' old_repos <- getOption("repos")
 #' options(repos = c(CRAN = "https://cloud.r-project.org"))
+#' on.exit(options(repos = old_repos), add = TRUE)
 #' resolve_dependencies(c("survival", "rmarkdown"), db = available.packages())
 #' }
 resolve_dependencies <- function(packages,
@@ -368,34 +395,55 @@ resolve_dependencies <- function(packages,
     stop("packages must be a non-empty character vector")
   }
 
-  # Default to installed packages to avoid requiring a CRAN mirror
-  # (important for examples, offline use, and R CMD check).
-  if (is.null(db)) {
-    db <- utils::installed.packages()
+  # When db is supplied (e.g. available.packages()), use tools::package_dependencies.
+  # When db is NULL, examine only the DESCRIPTION fields of the given packages
+  # via packageDescription() to avoid a slow full-library scan.
+  if (!is.null(db)) {
+    deps <- tools::package_dependencies(
+      packages,
+      db = db,
+      which = which,
+      recursive = recursive,
+      reverse = FALSE
+    )
+    all_pkgs <- unique(c(packages, unlist(deps, use.names = FALSE)))
+  } else {
+    # Lightweight local resolution
+    seen <- character(0)
+    to_check <- packages
+    while (length(to_check)) {
+      pkg <- to_check[1]
+      to_check <- to_check[-1]
+      if (pkg %in% seen) next
+      seen <- c(seen, pkg)
+      desc <- tryCatch(utils::packageDescription(pkg), error = function(e) NULL)
+      if (is.null(desc)) next
+      for (field in which) {
+        raw <- desc[[field]]
+        if (is.null(raw) || is.na(raw) || !nzchar(raw)) next
+        parts <- trimws(strsplit(raw, ",")[[1]])
+        names_only <- sub("\\s*\\(.*", "", parts)
+        names_only <- names_only[nzchar(names_only) & names_only != "R"]
+        if (recursive) to_check <- c(to_check, names_only)
+        seen <- unique(c(seen, names_only))
+      }
+    }
+    all_pkgs <- unique(seen)
   }
 
-  # Use tools::package_dependencies for resolution
-  deps <- tools::package_dependencies(
-    packages,
-    db = db,
-    which = which,
-    recursive = recursive,
-    reverse = FALSE
-  )
-
-  all_pkgs <- unique(c(packages, unlist(deps, use.names = FALSE)))
   all_pkgs <- all_pkgs[!is.na(all_pkgs)]
 
-  # Get versions for installed packages
-  installed <- utils::installed.packages()
-  versions <- installed[all_pkgs, "Version"]
-  names(versions) <- all_pkgs
+  # Versions via packageDescription (no full library scan)
+  versions <- vapply(all_pkgs, function(pkg) {
+    desc <- tryCatch(utils::packageDescription(pkg), error = function(e) NULL)
+    if (is.null(desc) || is.null(desc$Version)) "Not installed" else desc$Version
+  }, character(1))
 
   source_type <- ifelse(all_pkgs %in% packages, "Direct", "Dependency")
 
   data.frame(
     Package = all_pkgs,
-    Version = ifelse(is.na(versions), "Not installed", versions),
+    Version = versions,
     Source = source_type,
     stringsAsFactors = FALSE
   )[order(source_type, all_pkgs), ]
@@ -423,21 +471,12 @@ detect_version_conflicts <- function(packages, which = c("Depends", "Imports")) 
     stop("packages must be a non-empty character vector")
   }
 
-  # Prefer installed package descriptions only (avoids CRAN mirror requirement)
-  installed <- utils::installed.packages()
-
+  # Examine only the supplied packages via packageDescription()
+  # (avoids a full library scan with installed.packages()).
   conflicts <- list()
 
   for (pkg in packages) {
-    if (!pkg %in% rownames(installed)) next
-
-    # Prefer installed package description if available
-    desc <- if (pkg %in% rownames(installed)) {
-      utils::packageDescription(pkg)
-    } else {
-      NULL
-    }
-
+    desc <- tryCatch(utils::packageDescription(pkg), error = function(e) NULL)
     if (is.null(desc)) next
 
     for (field in which) {
@@ -460,11 +499,9 @@ detect_version_conflicts <- function(packages, which = c("Depends", "Imports")) 
 
         if (dep_name == "R") next
 
-        installed_ver <- if (dep_name %in% rownames(installed)) {
-          installed[dep_name, "Version"]
-        } else {
-          NA
-        }
+        # Version of the dependency via packageDescription (no full scan)
+        dep_desc <- tryCatch(utils::packageDescription(dep_name), error = function(e) NULL)
+        installed_ver <- if (is.null(dep_desc) || is.null(dep_desc$Version)) NA else dep_desc$Version
 
         conflict <- FALSE
         requirement_display <- dep
@@ -539,7 +576,6 @@ detect_version_conflicts <- function(packages, which = c("Depends", "Imports")) 
 #' run_clinical_tests()
 run_clinical_tests <- function(tolerance = 1e-6) {
   # Fixed test datasets with known results
-  set.seed(123)
   group_a <- c(10.2, 11.5, 9.8, 12.1, 10.9)
   group_b <- c(8.5, 9.1, 7.8, 8.9, 9.4)
 
