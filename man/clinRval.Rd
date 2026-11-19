@@ -4,7 +4,7 @@
 \name{clinRval}
 \alias{clinRval-package}
 \alias{clinRval}
-\title{clinRval: Tools for Risk-Based Validation of R in Clinical Trials}
+\title{clinRval: Risk-Based Validation of R in Clinical Trials}
 \description{
 Provides functions and structured workflows to support risk-based validation
 of R environments, packages, and analysis programs used in clinical trials.

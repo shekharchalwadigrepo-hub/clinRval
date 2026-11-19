@@ -4,13 +4,7 @@
 \alias{log_validation}
 \title{Log a Validation Run}
 \usage{
-log_validation(
-  action,
-  status,
-  details = "",
-  user = NULL,
-  logfile = "validation_log.csv"
-)
+log_validation(action, status, details = "", user = NULL, logfile)
 }
 \arguments{
 \item{action}{Character string describing the action (e.g., "Version verification").}
@@ -21,7 +15,9 @@ log_validation(
 
 \item{user}{Optional user name. Defaults to the current system user.}
 
-\item{logfile}{Path to the log file. Defaults to "validation_log.csv".}
+\item{logfile}{Path to the log file. Must be supplied by the caller;
+no default is provided so the function never writes into the user's
+home directory or working directory by default.}
 }
 \value{
 Invisible data.frame of the log entry that was written.
@@ -31,7 +27,7 @@ Appends a timestamped entry to a simple validation audit log file.
 Useful for documenting who ran validation activities and the outcome.
 }
 \examples{
-# Write to a temporary file so the example is clean for R CMD check
+# Write to a temporary file (never the user's home or working directory)
 tmp_log <- tempfile(fileext = ".csv")
 log_validation("Environment capture", "PASS", "R 4.4.1 confirmed",
                logfile = tmp_log)

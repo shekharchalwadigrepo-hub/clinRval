@@ -10,7 +10,7 @@ generate_html_report(
   reference_tests = NULL,
   risk = NULL,
   dependencies = NULL,
-  file = "validation_report.html"
+  file
 )
 }
 \arguments{
@@ -24,7 +24,9 @@ generate_html_report(
 
 \item{dependencies}{Optional result from resolve_dependencies().}
 
-\item{file}{Output HTML file path.}
+\item{file}{Output HTML file path. Must be supplied by the caller;
+no default is provided so the function never writes into the user's
+home directory or working directory by default.}
 }
 \value{
 Invisible path to the written file.

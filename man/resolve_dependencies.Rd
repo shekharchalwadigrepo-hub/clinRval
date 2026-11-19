@@ -20,11 +20,11 @@ for a broader set.}
 
 \item{recursive}{Logical; resolve dependencies of dependencies? Default TRUE.}
 
-\item{db}{Optional package database (matrix from \code{installed.packages()}
-or \code{available.packages()}). Defaults to installed packages so the
-function works offline and during \code{R CMD check} without a CRAN mirror.
-Pass \code{available.packages()} (after setting a CRAN mirror) for the
-full public dependency graph.}
+\item{db}{Optional package database (matrix from \code{available.packages()}).
+When NULL (the default), only the Depends/Imports fields of the
+supplied packages themselves are examined via \code{packageDescription()}.
+This avoids a full library scan. Pass \code{available.packages()}
+(after setting a CRAN mirror) for the complete public dependency graph.}
 }
 \value{
 A data.frame with Package, Version, and Source (Direct or Dependency).
@@ -35,11 +35,15 @@ or reporting packages (Depends + Imports by default). Useful for documenting
 the complete validated environment.
 }
 \examples{
-# Works offline using installed packages only
+# Works offline; only examines installed packages that are already loaded
+# or supplied via the db argument
 resolve_dependencies("stats")
 \dontrun{
-# Full resolution from CRAN (requires a mirror and network)
+# Full resolution from CRAN (requires a mirror and network).
+# Always restore the previous repos setting.
+old_repos <- getOption("repos")
 options(repos = c(CRAN = "https://cloud.r-project.org"))
+on.exit(options(repos = old_repos), add = TRUE)
 resolve_dependencies(c("survival", "rmarkdown"), db = available.packages())
 }
 }

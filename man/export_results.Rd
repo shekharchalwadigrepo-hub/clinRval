@@ -4,14 +4,16 @@
 \alias{export_results}
 \title{Export Validation Results to CSV}
 \usage{
-export_results(..., prefix = "validation_", dir = ".")
+export_results(..., prefix = "validation_", dir)
 }
 \arguments{
 \item{...}{Named objects to export (data.frames or lists that can be coerced).}
 
 \item{prefix}{Character prefix for output filenames. Default "validation_".}
 
-\item{dir}{Directory to write files into. Default current directory.}
+\item{dir}{Directory to write files into. Must be supplied by the caller;
+no default is provided so the function never writes into the user's
+home directory or working directory by default.}
 }
 \value{
 Invisible character vector of file paths written.
@@ -21,7 +23,7 @@ Writes one or more validation result objects to CSV files for archiving
 in the Trial Master File or validation package.
 }
 \examples{
-# Write to a temporary directory so the example is clean for R CMD check
+# Write to a temporary directory (never the user's home or working directory)
 env <- capture_environment(packages = "stats")
 tmp_dir <- tempdir()
 export_results(inventory = env$packages, prefix = "val_", dir = tmp_dir)
